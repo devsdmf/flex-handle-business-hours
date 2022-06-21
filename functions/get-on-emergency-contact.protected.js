@@ -1,7 +1,7 @@
 const CONTACTS_LIST = [
   {
     name: 'John Doe',
-    phoneNumber: '+5531993323271'
+    phoneNumber: '+5531999999999'
   }
 ];
 
