@@ -13,11 +13,11 @@ const getDomain = (context) => {
 const getContacts = () => ([
   {
     name: 'John Doe',
-    phoneNumber: '+5531993323271',
+    phoneNumber: '+5511999999999',
   },
   {
     name: 'Jane Doe',
-    phoneNumber: '+5531999999999',
+    phoneNumber: '+5511999999999',
   }
 ])
 
