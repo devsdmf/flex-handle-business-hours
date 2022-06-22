@@ -1,0 +1,305 @@
+{
+  "description": "Voice IVR w/ Business Hours 1",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "event": "incomingMessage"
+        },
+        {
+          "next": "CheckBusinessHours",
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 0,
+          "y": -10
+        }
+      }
+    },
+    {
+      "name": "SendCallToAgents",
+      "type": "send-to-flex",
+      "transitions": [
+        {
+          "event": "callComplete"
+        },
+        {
+          "event": "failedToEnqueue"
+        },
+        {
+          "event": "callFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 860,
+          "y": 800
+        },
+        "workflow": "",
+        "channel": "",
+        "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}",
+        "waitUrlMethod": "POST"
+      }
+    },
+    {
+      "name": "ConnectToEmergencyContact",
+      "type": "connect-call-to",
+      "transitions": [
+        {
+          "next": "ValidateEmergencyContactOutcome",
+          "event": "callCompleted"
+        },
+        {
+          "next": "ValidateEmergencyContactOutcome",
+          "event": "hangup"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 530,
+          "y": 1720
+        },
+        "time_limit": "",
+        "caller_id": "{{contact.channel.address}}",
+        "record": false,
+        "noun": "number",
+        "to": "{{widgets.FetchOnCallContact.parsed.phoneNumber}}",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "ValidateEmergencyContactOutcome",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "SendToVoicemail",
+          "event": "noMatch"
+        },
+        {
+          "next": "ThankYouMessage",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to completed",
+              "arguments": [
+                "{{widgets.ConnectToEmergencyContact.DialCallStatus}}"
+              ],
+              "type": "equal_to",
+              "value": "completed"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.ConnectToEmergencyContact.DialCallStatus}}",
+        "offset": {
+          "x": 460,
+          "y": 2060
+        }
+      }
+    },
+    {
+      "name": "SendToVoicemail",
+      "type": "send-to-flex",
+      "transitions": [
+        {
+          "event": "callComplete"
+        },
+        {
+          "event": "failedToEnqueue"
+        },
+        {
+          "event": "callFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -120,
+          "y": 2400
+        },
+        "workflow": "",
+        "channel": "",
+        "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}"
+      }
+    },
+    {
+      "name": "ValidateBusinessHours",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "FetchOnCallContact",
+          "event": "noMatch"
+        },
+        {
+          "next": "SendCallToAgents",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to true",
+              "arguments": [
+                "{{widgets.CheckBusinessHours.parsed.within_business_hours}}"
+              ],
+              "type": "equal_to",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.CheckBusinessHours.parsed.within_business_hours}}",
+        "offset": {
+          "x": 140,
+          "y": 560
+        }
+      }
+    },
+    {
+      "name": "ValidateFetchEmergencyContact",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "SendToVoicemail",
+          "event": "noMatch"
+        },
+        {
+          "next": "SayCallingOnCallContact",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to 200",
+              "arguments": [
+                "{{widgets.FetchOnCallContact.status_code}}"
+              ],
+              "type": "equal_to",
+              "value": "200"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.FetchOnCallContact.status_code}}",
+        "offset": {
+          "x": 170,
+          "y": 1150
+        }
+      }
+    },
+    {
+      "name": "ThankYouMessage",
+      "type": "say-play",
+      "transitions": [
+        {
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 560,
+          "y": 2390
+        },
+        "loop": 1,
+        "say": "Thank you for your call, if you need any further assistance, do not hesitate to call us back! Good bye!"
+      }
+    },
+    {
+      "name": "CheckBusinessHours",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ValidateBusinessHours",
+          "event": "success"
+        },
+        {
+          "next": "SayErrorMessage",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "",
+        "environment_sid": "",
+        "offset": {
+          "x": 140,
+          "y": 250
+        },
+        "function_sid": "",
+        "url": ""
+      }
+    },
+    {
+      "name": "SayErrorMessage",
+      "type": "say-play",
+      "transitions": [
+        {
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -600,
+          "y": 440
+        },
+        "loop": 1,
+        "say": "I'm sorry, an error has occurred, please, try again!"
+      }
+    },
+    {
+      "name": "FetchOnCallContact",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ValidateFetchEmergencyContact",
+          "event": "success"
+        },
+        {
+          "next": "SayErrorMessage",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "",
+        "environment_sid": "",
+        "offset": {
+          "x": 150,
+          "y": 870
+        },
+        "function_sid": "",
+        "url": ""
+      }
+    },
+    {
+      "name": "SayCallingOnCallContact",
+      "type": "say-play",
+      "transitions": [
+        {
+          "next": "ConnectToEmergencyContact",
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 460,
+          "y": 1410
+        },
+        "loop": 1,
+        "say": "None of our agents are available at this moment, we are trying to contact {{widgets.FetchOnCallContact.parsed.name}} , please, wait a minute..."
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}

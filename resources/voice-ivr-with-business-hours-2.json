@@ -1,0 +1,261 @@
+{
+  "description": "Voice IVR w/ Business Hours 2",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "event": "incomingMessage"
+        },
+        {
+          "next": "CheckBusinessHours",
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 0,
+          "y": -10
+        }
+      }
+    },
+    {
+      "name": "SendCallToAgents",
+      "type": "send-to-flex",
+      "transitions": [
+        {
+          "event": "callComplete"
+        },
+        {
+          "event": "failedToEnqueue"
+        },
+        {
+          "event": "callFailure"
+        }
+      ],
+      "properties": {
+        "waitUrl": "",
+        "offset": {
+          "x": 860,
+          "y": 800
+        },
+        "workflow": "",
+        "channel": "",
+        "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}"
+      }
+    },
+    {
+      "name": "SendToVoicemail",
+      "type": "send-to-flex",
+      "transitions": [
+        {
+          "event": "callComplete"
+        },
+        {
+          "event": "failedToEnqueue"
+        },
+        {
+          "event": "callFailure"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 550,
+          "y": 1760
+        },
+        "workflow": "",
+        "channel": "",
+        "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}"
+      }
+    },
+    {
+      "name": "ValidateBusinessHours",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "RedirectCallToExternalContact",
+          "event": "noMatch"
+        },
+        {
+          "next": "SendCallToAgents",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to true",
+              "arguments": [
+                "{{widgets.CheckBusinessHours.parsed.within_business_hours}}"
+              ],
+              "type": "equal_to",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.CheckBusinessHours.parsed.within_business_hours}}",
+        "offset": {
+          "x": 140,
+          "y": 560
+        }
+      }
+    },
+    {
+      "name": "ThankYouMessage",
+      "type": "say-play",
+      "transitions": [
+        {
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 130,
+          "y": 1770
+        },
+        "loop": 1,
+        "say": "Thank you for your call, if you need any further assistance, do not hesitate to call us back! Good bye!"
+      }
+    },
+    {
+      "name": "CheckBusinessHours",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "ValidateBusinessHours",
+          "event": "success"
+        },
+        {
+          "next": "SayErrorMessage",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "",
+        "environment_sid": "",
+        "offset": {
+          "x": 140,
+          "y": 250
+        },
+        "function_sid": "",
+        "url": ""
+      }
+    },
+    {
+      "name": "SayErrorMessage",
+      "type": "say-play",
+      "transitions": [
+        {
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -380,
+          "y": 1150
+        },
+        "loop": 1,
+        "say": "I'm sorry, an error has occurred, please, try again!"
+      }
+    },
+    {
+      "name": "RedirectCallToExternalContact",
+      "type": "add-twiml-redirect",
+      "transitions": [
+        {
+          "next": "CheckRedirectResult",
+          "event": "return"
+        },
+        {
+          "next": "SayErrorMessage",
+          "event": "timeout"
+        },
+        {
+          "next": "SayErrorMessage",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 190,
+          "y": 880
+        },
+        "method": "POST",
+        "url": "",
+        "timeout": "14400"
+      }
+    },
+    {
+      "name": "CheckRedirectResult",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "SayErrorMessage",
+          "event": "noMatch"
+        },
+        {
+          "next": "ThankYouMessage",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to success",
+              "arguments": [
+                "{{widgets.RedirectCallToExternalContact.result}}"
+              ],
+              "type": "equal_to",
+              "value": "success"
+            }
+          ]
+        },
+        {
+          "next": "SendToVoicemail",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to failed",
+              "arguments": [
+                "{{widgets.RedirectCallToExternalContact.result}}"
+              ],
+              "type": "equal_to",
+              "value": "failed"
+            }
+          ]
+        },
+        {
+          "next": "SendToVoicemail",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to unavailable",
+              "arguments": [
+                "{{widgets.RedirectCallToExternalContact.result}}"
+              ],
+              "type": "equal_to",
+              "value": "unavailable"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.RedirectCallToExternalContact.result}}",
+        "offset": {
+          "x": 190,
+          "y": 1290
+        }
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
