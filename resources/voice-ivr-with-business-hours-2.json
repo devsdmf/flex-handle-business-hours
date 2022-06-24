@@ -49,9 +49,10 @@
           "x": 860,
           "y": 800
         },
-        "workflow": "",
-        "channel": "",
-        "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}"
+        "workflow": "WWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "channel": "TCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}",
+        "waitUrlMethod": "POST"
       }
     },
     {
@@ -73,8 +74,8 @@
           "x": 550,
           "y": 1760
         },
-        "workflow": "",
-        "channel": "",
+        "workflow": "WWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "channel": "TCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}"
       }
     },
@@ -140,14 +141,14 @@
         }
       ],
       "properties": {
-        "service_sid": "",
-        "environment_sid": "",
+        "service_sid": "ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "environment_sid": "ZEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "offset": {
           "x": 140,
           "y": 250
         },
-        "function_sid": "",
-        "url": ""
+        "function_sid": "ZHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "url": "https://flex-handle-business-hours-XXXX-dev.twil.io/check-business-hours"
       }
     },
     {
@@ -190,7 +191,7 @@
           "y": 880
         },
         "method": "POST",
-        "url": "",
+        "url": "https://flex-handle-business-hours-XXXX-dev.twil.io/redirect-call-to-external-contact",
         "timeout": "14400"
       }
     },

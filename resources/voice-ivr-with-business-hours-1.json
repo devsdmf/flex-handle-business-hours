@@ -44,12 +44,13 @@
         }
       ],
       "properties": {
+        "waitUrl": "",
         "offset": {
           "x": 860,
           "y": 800
         },
-        "workflow": "",
-        "channel": "",
+        "workflow": "WWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "channel": "TCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}",
         "waitUrlMethod": "POST"
       }
@@ -130,8 +131,8 @@
           "x": -120,
           "y": 2400
         },
-        "workflow": "",
-        "channel": "",
+        "workflow": "WWXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "channel": "TCXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "attributes": "{ \"type\": \"inbound\", \"name\": \"{{trigger.call.From}}\"}"
       }
     },
@@ -228,14 +229,14 @@
         }
       ],
       "properties": {
-        "service_sid": "",
-        "environment_sid": "",
+        "service_sid": "ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "environment_sid": "ZEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "offset": {
           "x": 140,
           "y": 250
         },
-        "function_sid": "",
-        "url": ""
+        "function_sid": "ZHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "url": "https://flex-handle-business-hours-XXXX-dev.twil.io/check-business-hours"
       }
     },
     {
@@ -269,14 +270,14 @@
         }
       ],
       "properties": {
-        "service_sid": "",
-        "environment_sid": "",
+        "service_sid": "ZSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "environment_sid": "ZEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         "offset": {
           "x": 150,
           "y": 870
         },
-        "function_sid": "",
-        "url": ""
+        "function_sid": "ZHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        "url": "https://flex-handle-business-hours-XXXX-dev.twil.io/get-on-call-contact"
       }
     },
     {
